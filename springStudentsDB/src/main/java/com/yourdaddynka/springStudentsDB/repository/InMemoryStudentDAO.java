@@ -10,12 +10,10 @@ import java.util.Optional;
 
 // определение Data Access Object описывает как прослойку между БД и системой.
 // DAO определяет общие методы использования соединения, его получение, закрытие и (или) возвращение в Connection Pool.
-
-
 //@Repository делаем этот класс Bean-ом для работы с данными (хранение на машине, позже следует переделать хранение на БД)
+//текущий класс - хранение данных не в БД а в памяти(в текущем проекте приоритет отдан БД, но в случае ошибки с бд програма переключит хранение в железо)
 @Repository
 public class InMemoryStudentDAO {
-    //todo перепиши ркализацию через соединение с базой данных
     private final List<Student> STUDENTS = new ArrayList<>();
 
     public List<Student> findAll() {
@@ -33,11 +31,10 @@ public class InMemoryStudentDAO {
                 .orElseThrow(() -> new RuntimeException("Пользователь с таким ID: " + idStudent + " не найден")));
     }
 
-
     public Optional<Student> update(Student student) {
-        for(int i = 0;i < STUDENTS.size();i++){
-            if(STUDENTS.get(i).getId().equals(student.getId())){
-                STUDENTS.set(i,student);
+        for (int i = 0; i < STUDENTS.size(); i++) {
+            if (STUDENTS.get(i).getId().equals(student.getId())) {
+                STUDENTS.set(i, student);
                 return Optional.ofNullable(STUDENTS.get(i));
             }
         }
@@ -45,7 +42,7 @@ public class InMemoryStudentDAO {
     }
 
     public boolean remove(int idStudent) {
-        Optional<Student>  student = findById(idStudent);
+        Optional<Student> student = findById(idStudent);
         return student.map(STUDENTS::remove).orElse(false);
     }
 }

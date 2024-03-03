@@ -1,33 +1,51 @@
 package com.yourdaddynka.springStudentsDB.service.impl;
+
 import com.yourdaddynka.springStudentsDB.model.Student;
-import com.yourdaddynka.springStudentsDB.repository.InMemoryStudentDAO;
+import com.yourdaddynka.springStudentsDB.repository.StudentRepository;
 import com.yourdaddynka.springStudentsDB.service.StudentService;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+//    @Primary - выбор приоритета хранения(аппаратный(файл DAO) или БД(текущий))
+//    @Transactional - для корректного удаления из БД(иначче ошибка в postman)
+//    Все реализованные методы исходят из StudentRepository,который наследуется от JpaRepository(в параметры передаем класс, по которому реализуется бд и тип данных уникального ключа). Внутри даного класса есть все необходимые методы для работы с бд.
+
 @Service
-@RequiredArgsConstructor
-//сообщаем spring что этот класс является сервисом
+@AllArgsConstructor
+@Primary
 public class StudentServiceImpl implements StudentService {
-    @NonNull
-    private final InMemoryStudentDAO repository;
+
+    private final StudentRepository repository;
 
     @Override
-    public List<Student> findAll() {return repository.findAll();}
+    public List<Student> findAll() {
+        return repository.findAll();
+    }
 
     @Override
-    public boolean save(Student student) {return repository.save(student);}
+    public boolean save(Student student) {
+        return Optional.of(repository.save(student)).isPresent();
+    }
 
     @Override
-    public Optional<Student> findById(int idStudent) {return repository.findById(idStudent);}
+    public Optional<Student> findById(int idStudent) {
+        return repository.findById(idStudent);
+    }
 
     @Override
-    public Optional<Student> update(Student student) {return repository.update(student);}
+    public Optional<Student> update(Student student) {
+        return Optional.of(repository.save(student));
+    }
 
     @Override
-    public boolean remove(int idStudent) {return repository.remove(idStudent);}
+    @Transactional
+    public boolean remove(int idStudent) {
+        repository.deleteById(idStudent);
+        return true;
+    }
 }

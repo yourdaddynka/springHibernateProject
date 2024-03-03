@@ -11,7 +11,6 @@ import java.util.Properties;
 
 public class DBConnect {
     private static final String propertyFilePatch = "src/main/resources/application.properties";
-    private static Properties properties;
     private static DBConnect instance;
 
     public static DBConnect getInstance() {
@@ -28,7 +27,7 @@ public class DBConnect {
 
     private static void setProperties() {
         try {
-            properties = new Properties();
+            Properties properties = new Properties();
             properties.load(new FileReader(propertyFilePatch));
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -39,9 +38,6 @@ public class DBConnect {
         setProperties();
         try {
             HikariConfig hikariConfig = new HikariConfig("/application.properties");
-//            hikariConfig.setJdbcUrl(properties.getProperty("URL"));
-//            hikariConfig.setUsername(properties.getProperty("USER"));
-//            hikariConfig.setPassword(properties.getProperty("PASSWORD"));
             return new HikariDataSource(hikariConfig);
         } catch (HikariPool.PoolInitializationException | IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
